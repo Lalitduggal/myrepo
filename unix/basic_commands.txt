@@ -1,0 +1,62 @@
+vi
+
+
+create a file
+create a file with zero bytes
+rename a file
+
+
+make a directory
+change to directory
+rename a directory
+delete an empty directory
+delete a directory with contents
+delete directory recursively
+
+
+environment variables
+env
+
+
+shell variables
+>
+<
+>>
+<<
+`
+PATH
+$
+
+
+shell inbuilt functions
+date
+time
+cal
+who
+who am i
+whoami
+which
+whereis
+echo
+find
+grep
+egrep
+fgrep
+diff
+zip
+gunzip
+head
+tail
+cd
+mkdir
+rm
+rm -rf
+touch
+mv
+cat
+vi
+env
+datetime
+datetimestamp
+timestamp
+calc
