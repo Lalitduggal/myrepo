@@ -1,5 +1,11 @@
 vi
 
+awk
+
+sed
+
+find
+
 
 create a file
 create a file with zero bytes
