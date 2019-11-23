@@ -44,9 +44,9 @@ by default the master branch is cloned when git clone happens;
 in case you want to clone a specific branch then
 git clone .... -b <branch name>
 
-if a specific branch is cloned then you cannot checkout another branch ???
+if a specific branch is cloned then later you can checkout another branch as required
 
-git branches
+git branch
 
 
 git checkout -b <branchname from git branches>
