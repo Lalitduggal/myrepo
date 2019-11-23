@@ -1,0 +1,47 @@
+vi
+
+create a new file
+
+edit an existing file
+insert character
+replace a character
+
+insert a line
+replace a line
+
+save a file
+
+rename a file
+
+
+delete a character
+delete a word
+delete a line
+delete a file
+
+
+first line of file
+last line of file
+
+page up
+page down
+
+half page up
+half page down
+
+move cursor to first character of a line
+move cursor to last character of a line
+
+copy
+paste
+
+cut
+paste
+
+
+
+search content in file
+
+replace content in file
+
+open multiple files
