@@ -1,0 +1,11 @@
+create table vms_employee_until_15Jul2018 as select * from vms_employee;
+truncate table vms_employee;
+
+INSERT INTO vms_employee(id,emp_id,emp_name,email,mobile,location) VALUES (1,'M-0004','Harshal Nanavati','Harshal.Nanavati@radiusww.com','9819470458','Mumbai')
+
+update vms_employee set location = 'Mumbai'
+
+
+
+username: admin@admin.com
+password:123456
