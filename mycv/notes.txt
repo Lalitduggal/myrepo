@@ -1,0 +1,373 @@
+import json
+
+import boto3
+client_dynamodb = boto3.client('dynamodb')
+client_ses = boto3.client('ses')
+
+def lambda_handler(event, context):
+
+    ##################################################################
+    def update_status():
+        response = client_dynamodb.update_item(
+            TableName = v_table_name,
+            Key={
+                'message-id': {
+                    'S': v_mail_message_id
+                }
+            },
+            ReturnConsumedCapacity = 'TOTAL',
+            UpdateExpression = v_update_expression,
+            ExpressionAttributeNames = v_expression_attribute_names_dict,
+            ExpressionAttributeValues = v_expression_attribute_values_dict
+        )
+    
+    
+    ##################################################################
+    def send_email_to_owner():
+
+        v_cv_email_template = 'mycvlink-status-email-template'
+        if (v_event_type == 'Send'):
+            v_event_type_str = 'Sent'
+        elif(v_event_type == 'Delivery'):
+            v_event_type_str = 'Delivered'
+        elif(v_event_type == 'Open'):
+            v_event_type_str = 'Opened'
+        elif(v_event_type == 'Click'):
+            v_event_type_str = 'Downloaded'
+        elif(v_event_type == 'Bounce'):
+            v_event_type_str = 'Bounced'
+        elif(v_event_type == 'Complaint'):
+            v_event_type_str = 'marked spammed'
+        elif(v_event_type == 'Reject'):
+            v_event_type_str = 'Rejected'
+        else:
+            v_event_type_str = 'Status not clear'
+        
+        v_template_data_dict = {
+            "to-name": v_to_name,
+            "to-email-id": v_to_email_id,
+            "of-username": v_from_name,
+            "of-username-email-id": v_from_email_id,
+            "event-type": v_event_type_str,
+            "date-time": v_sns_timestamp
+        }
+    
+        v_template_data_str = json.dumps(v_template_data_dict)
+        print('The template data string is ' + v_template_data_str)
+
+        print('Starting to send email to owner')
+        
+        response = client_ses.send_templated_email(
+            Source = v_from_name + '<' + v_from_email_id + '>',
+            Destination={
+                'ToAddresses': [
+                    v_from_name + '<' + v_from_email_id + '>'
+                ]
+            },
+            ReplyToAddresses=[
+                v_from_email_id
+            ],
+            ReturnPath = v_from_email_id,
+            Tags=[
+                {
+                    'Name': 'name',
+                    'Value': 'mycvlink'
+                }
+            ],
+            Template = v_cv_email_template,
+            TemplateData = v_template_data_str
+        )        
+
+        print(response)
+        
+        if (response['ResponseMetadata']['HTTPStatusCode'] == 200):
+            print('Successfully sent email to owner')
+        else:
+            print('ERROR to send email to owner')
+        
+        
+    ##################################################################
+    def send_thank_you_email_to_downloader():
+        v_cv_email_template = 'mycvlink-cv-download-thankyou-email-template'
+        
+        v_template_data_dict = {
+            "to-name": v_to_name,
+            "from-name": v_from_name,
+            "mobile": '1234567'
+        }
+    
+        v_template_data_str = json.dumps(v_template_data_dict)
+        print('The template data string is ' + v_template_data_str)
+
+        print('Starting to send email to downloader')
+        print('From name is ' + v_from_name + ' email id is ' + v_from_email_id + ' to name is ' + v_to_name + ' to email id is ' + v_to_email_id)
+        
+        response = client_ses.send_templated_email(
+            Source = v_from_name + '<' + v_from_email_id + '>',
+            Destination={
+                'ToAddresses': [
+                    v_to_name + '<' + v_to_email_id + '>'
+                ]
+            },
+            ReplyToAddresses=[
+                v_from_email_id
+            ],
+            ReturnPath = v_from_email_id,
+            Tags=[
+                {
+                    'Name': 'name',
+                    'Value': 'mycvlink'
+                }
+            ],
+            Template = v_cv_email_template,
+            TemplateData = v_template_data_str
+        )        
+
+        print(response)
+        
+        if (response['ResponseMetadata']['HTTPStatusCode'] == 200):
+            print('Successfully sent email to downloader')
+        else:
+            print('ERROR to send email to downloader')
+        
+
+
+
+    ##################################################################
+    print('Starting to collect all json into local variables')
+    
+    print('The json received is ' + str(event))
+    
+    v_sns_message_dict = event['Records'][0]['Sns']['Message']
+    v_sns_message_dict_json = json.loads(v_sns_message_dict)
+    v_event_type = v_sns_message_dict_json['eventType']
+    print('The notification type received is ' + v_event_type)    
+
+    v_mail = v_sns_message_dict_json['mail']
+    v_mail_source = v_mail['source']
+    print('Source email is ' + v_mail_source)
+
+    v_mail_destination = v_mail['destination'][0]
+    print('Destination email is ' + v_mail_destination)
+
+
+    v_mail_message_id = v_mail['messageId']
+    print('Message Id to be used to update date-time in tracker is ' + v_mail_message_id)
+
+    v_sns_timestamp = event['Records'][0]['Sns']['Timestamp']
+    print('Timestamp of event type ' + v_event_type + ' is ' + v_sns_timestamp)
+
+
+
+    
+    print('Successfully collected all json into local variables')
+    
+
+    ##################################################################
+    print('Starting to set the table name for status tracker')
+    v_table_name = 'mycvlink-tracker'
+    print('Successfully set the table name for status tracker as ' + v_table_name)
+
+
+    print('Starting to split the variables from local variables')
+    v_from_name = v_mail_source.split("<")[0]
+    v_from_email_id = v_mail_source.split("<")[1][:-1]
+    v_to_name = v_mail_destination.split("<")[0]
+    v_to_email_id = v_mail_destination.split("<")[1][:-1]
+    print('Successfully split the variables from local variables v_from_name is ' + v_from_name + ' ,v_from_email_id is ' + v_from_email_id + ' ,v_to_name is ' + v_to_name + ' ,v_to_email_id is ' + v_to_email_id)
+    
+    ##################################################################
+    if(v_event_type == 'Send'):
+
+        print('Starting to insert item in the dynamodb tracker table ' + v_table_name + ' with send-date-time as ' + v_sns_timestamp)
+
+        response = client_dynamodb.put_item(
+            TableName = v_table_name,
+            Item={
+                'message-id': {
+                    'S': v_mail_message_id
+                },
+                'send-date-time': {
+                    'S': v_sns_timestamp
+                },
+                'from-email-id': {
+                    'S': v_mail_source
+                },                     
+                'to-email-id': {
+                    'S': v_mail_destination
+                }
+            },
+            ReturnConsumedCapacity = 'TOTAL'
+        )
+    
+        
+        print(response)
+        
+        # if response httpcode is 200 then
+        print('Successfully inserted item in the dynamodb tracker table ' + v_table_name + ' with send-date-time as ' + v_sns_timestamp)
+        
+        # Send email to owner that email was delivered    
+        send_email_to_owner()
+
+    ##################################################################
+    if(v_event_type == 'Delivery'):
+
+        print('Starting to update item in the dynamodb tracker table ' + v_table_name + ' with delivery-date-time as ' + v_sns_timestamp)
+
+        v_update_expression = 'set #delivery_date_time = :delivery_date_time_value'
+        
+        v_expression_attribute_names_dict = {
+            '#delivery_date_time': 'delivery-date-time'
+        }
+        
+        v_expression_attribute_names_str = json.dumps(v_expression_attribute_names_dict)
+        print('Expression attribute names json is ' + v_expression_attribute_names_str)
+        
+        v_expression_attribute_values_dict = {
+            ':delivery_date_time_value': {
+                'S': v_sns_timestamp
+            }
+        }
+        
+        v_expression_attribute_values_str = json.dumps(v_expression_attribute_values_dict)
+        print('Expression attribute values json is ' + v_expression_attribute_values_str)
+        
+        update_status()
+        send_email_to_owner()        
+        
+    ##################################################################
+    elif (v_event_type == 'Open'):
+
+        print('Starting to update item in the dynamodb tracker table ' + v_table_name + ' with first-open-date-time as ' + v_sns_timestamp)
+
+        v_update_expression = 'set #first_open_date_time = :first_open_date_time_value'
+        
+        v_expression_attribute_names_dict = {
+            '#first_open_date_time': 'first-open-date-time'
+        }
+        
+        v_expression_attribute_names_str = json.dumps(v_expression_attribute_names_dict)
+        print('Expression attribute names json is ' + v_expression_attribute_names_str)
+        
+        v_expression_attribute_values_dict = {
+            ':first_open_date_time_value': {
+                'S': v_sns_timestamp
+            }
+        }
+        
+        v_expression_attribute_values_str = json.dumps(v_expression_attribute_values_dict)
+        print('Expression attribute values json is ' + v_expression_attribute_values_str)
+        
+        update_status()
+        send_email_to_owner()
+
+    ##################################################################
+    elif(v_event_type == 'Click'):
+
+        print('Starting to update item in the dynamodb tracker table ' + v_table_name + ' with latest-cv-download-date-time as ' + v_sns_timestamp)
+
+        v_update_expression = 'set #latest_cv_download_date_time = :latest_cv_download_date_time_value'
+        
+        v_expression_attribute_names_dict = {
+            '#latest_cv_download_date_time': 'latest-cv-download-date-time'
+        }
+        
+        v_expression_attribute_names_str = json.dumps(v_expression_attribute_names_dict)
+        print('Expression attribute names json is ' + v_expression_attribute_names_str)
+        
+        v_expression_attribute_values_dict = {
+            ':latest_cv_download_date_time_value': {
+                'S': v_sns_timestamp
+            }
+        }
+        
+        v_expression_attribute_values_str = json.dumps(v_expression_attribute_values_dict)
+        print('Expression attribute values json is ' + v_expression_attribute_values_str)
+        
+        update_status()
+        send_thank_you_email_to_downloader()
+        send_email_to_owner()
+        
+    ##################################################################
+    elif(v_event_type == 'Bounce'):
+
+        print('Starting to update item in the dynamodb tracker table ' + v_table_name + ' with bounce-date-time as ' + v_sns_timestamp)
+
+        v_update_expression = 'set #bounce_date_time = :bounce_date_time_value'
+        
+        v_expression_attribute_names_dict = {
+            '#bounce_date_time': 'bounce-date-time'
+        }
+        
+        v_expression_attribute_names_str = json.dumps(v_expression_attribute_names_dict)
+        print('Expression attribute names json is ' + v_expression_attribute_names_str)
+        
+        v_expression_attribute_values_dict = {
+            ':bounce_date_time_value': {
+                'S': v_sns_timestamp
+            }
+        }
+        
+        v_expression_attribute_values_str = json.dumps(v_expression_attribute_values_dict)
+        print('Expression attribute values json is ' + v_expression_attribute_values_str)
+        
+        update_status()
+        send_email_to_owner()    
+        
+    ##################################################################
+    elif(v_event_type == 'Complaint'):
+
+        print('Starting to update item in the dynamodb tracker table ' + v_table_name + ' with spam-date-time as ' + v_sns_timestamp)
+
+        v_update_expression = 'set #spam_date_time = :spam_date_time_value'
+        
+        v_expression_attribute_names_dict = {
+            '#spam_date_time': 'spam-date-time'
+        }
+        
+        v_expression_attribute_names_str = json.dumps(v_expression_attribute_names_dict)
+        print('Expression attribute names json is ' + v_expression_attribute_names_str)
+        
+        v_expression_attribute_values_dict = {
+            ':spam_date_time_value': {
+                'S': v_sns_timestamp
+            }
+        }
+        
+        v_expression_attribute_values_str = json.dumps(v_expression_attribute_values_dict)
+        print('Expression attribute values json is ' + v_expression_attribute_values_str)
+        
+        update_status()
+        send_email_to_owner()    
+        
+    ##################################################################
+    elif(v_event_type == 'Reject'):
+
+        # update item in tracker table with delivery-date-time
+        
+        print('Starting to update item in the dynamodb tracker table ' + v_table_name + ' with reject-date-time as ' + v_sns_timestamp)
+
+        v_update_expression = 'set #reject_date_time = :reject_date_time_value'
+        
+        v_expression_attribute_names_dict = {
+            '#reject_date_time': 'reject-date-time'
+        }
+        
+        v_expression_attribute_names_str = json.dumps(v_expression_attribute_names_dict)
+        print('Expression attribute names json is ' + v_expression_attribute_names_str)
+        
+        v_expression_attribute_values_dict = {
+            ':reject_date_time_value': {
+                'S': v_sns_timestamp
+            }
+        }
+        
+        v_expression_attribute_values_str = json.dumps(v_expression_attribute_values_dict)
+        print('Expression attribute values json is ' + v_expression_attribute_values_str)
+        
+        update_status()
+        send_email_to_owner()
+    
+    ##################################################################
+    else:
+        pass
