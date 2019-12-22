@@ -1,0 +1,59 @@
+AWs serverless application:
+
+technologies:
+	ssh key generation: public and private key
+	change permission of ssh keys
+	
+	scm: github private repo by creating and storing the ssh-keys
+	
+
+	diagram to showcase using draw.io
+	lambda using python3
+	step functions: for lambda orchestration
+	storage: s3
+	api gateway
+	database: dynamodb
+	decouple: sqs
+	notification: sns
+	email channel: ses and email template
+	cicd: jenkin
+	password store: system manager parameter store
+	route53 for domain hosting and mapping to the s3 bucket website
+	content delivery network: cloudfront
+	audit: cloudtrail
+	application logs and scheduling: cloudwatch
+	infrastructure as a code: Cloudformation
+	configuration: ansible
+	
+	region: sydney
+	vpc
+	subnet
+	security group
+	nacl
+	iam policy for ec2, lambda gicing permission for dynamodb, api gateway, s3, sns, ses, sqs, ec2, cloudwatch, cloudtrail
+	create key pair for ec2
+	s3 bucket for initial scripts
+	s3 bucket policy to explicity deny and allow only for aws iam user
+	s3: for https, AES256 encryption
+	s3 VPC endpoint for faster access
+	s3 website configuration and make it public also for any future files
+	versioning enabled on s3
+	winscp access for s3 bucket
+	internet gateway for public subnet
+	route table
+	
+	
+	
+	secure terminal access: using putty and pem key
+	
+	build
+	package
+	deploy
+	test execution
+	health check execution
+	notification on health check failure
+	
+	
+	
+	
+	
