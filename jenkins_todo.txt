@@ -1,0 +1,26 @@
+jenkin installation
+jenkin plugins
+jenkin proxy setting
+jenkin ldap setting
+jenkin env variables
+jenkin credential creation
+jenkin backup
+jenkin upgrade
+jenkin master slave configuration
+jenkin password encryption
+jenkin restarts
+jenkin safe restarts
+jenkin unlock
+jenkin admin user creation
+jenkin enable https
+jenkin provide access to users
+jenkin role based access
+
+
+git cloning
+build pipeline
+DSL groovy pipeline
+password credentials in DSL
+when condition in DSL
+log parser
+email
