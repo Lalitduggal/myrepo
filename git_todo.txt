@@ -1,0 +1,52 @@
+git:
+what is diff between git pull and git merge
+what is git stash
+how to resolve merge conflicts
+how to create tag
+how to go back to commit
+find what was changed for a commit
+find what changed between 2 commits
+get commit history
+difference between git merge and git xxx
+find time when file was changed
+find all changes to a file
+change HEAD
+
+gitdiff
+
+
+sshkey-gen
+vi ~/.ssh/config
+
+gitURL
+	host:
+	key:
+	repo:
+	
+git clone gitURL: -b <branchname>
+
+
+git status
+git add <filename>
+git commit -m "message for commit"
+git push origin
+
+git remote -v
+git remote add 
+
+git pull origin <branchname>
+
+git checkout <branchname>
+
+create a new branch
+create a new branch from old branch
+
+create a git tag
+
+create a pull request
+
+fork a branch
+
+create git hook
+
+
