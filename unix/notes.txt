@@ -1,0 +1,192 @@
+unix commands
+ls
+cat
+more
+less
+pg
+lsof
+watch
+mesg
+wall
+cd
+mkdir
+cd
+rmdir
+rm
+hostname
+pwd
+passwd
+chmod
+chown
+kill
+ps
+find
+umask
+create user - 
+create group
+date
+banner
+who
+who am i
+alias
+sudo
+su
+exit
+clear
+bash
+id
+grep
+fgrep
+egrep
+wc
+od -bc
+bc
+cal
+calculator --??
+sort
+touch
+head
+tail
+ln
+mknod
+uname
+mount
+umount
+which
+whereis
+cp
+fg
+bg
+nohup
+jobs
+reboot
+init
+shutdown
+chkdisk
+fdisk
+echo
+env
+free
+/proc/cpuinfo
+/proc/meminfo
+nice
+/var/log/messages
+ipcs
+service
+chkconfig
+df -h
+dtrace - who is abusing the memory
+prstat - and look at rss call
+zfs -> ARC ?
+file -- command to check type of file
+useradd
+groupadd
+newgrp
+
+
+absolute/relative path
+	
+
+vi:
+open a new file
+open an existing file
+exit a file without saving
+exit a file with saving
+start of file
+end of file
+page up
+page down
+half page up
+half page down
+start of line
+end of line
+insert a line above
+insert a line below
+delete a character to left
+delete a character to right
+delete a character
+delete a line top
+delete a line bottom
+delete multiple lines on top
+delete multiple lines on bottom
+open multiple files
+show line numbers
+donot show line numbers
+replace a word in full file
+replace a word only for first occurance
+replace a word only for first and second occurance
+replace a word only for first and third occurance
+prompt to replace a word in the file
+donot prompt to replace a word in the file
+replace a word
+replace end of line with a character
+how to replace a special character
+how to replace /something instead of something
+enable colors in vi
+disable colors in vi
+how to automatically set vi environment whenever you open vi
+cut
+paste
+get the lines from 10 to 15 in another file
+how to change the color of executable files from regular files in unix: ls -l command
+how to change the case of a letter/word: toggle case
+how to convert full file in upper or lower case or toggle
+set nu
+set nonu
+set ic
+set noic
+summary of file: where I am in 53% of 12 lines etc: Control g
+
+how to get all the dangling link where softlink is pointing and original file is not present
+cleanlinks: is the command to clear the dangling links
+
+awk:
+
+
+
+sed:
+
+
+crontab:
+different sections of the file
+setting to run a script at 21:00 hrs on the first of the month only if it is a weekend
+
+
+
+other concepts:
+sticky bit
+diff types of files
+folder sharing
+/tmp
+hidden files
+ssh equivalence
+maintain the timestamp of a file
+find all/top4/last 4 of the ORA error and the next line after the ORA error in alertlog file
+set a process in background and then get it back in foreground
+here document
+/etc/fstab
+diff between soft link and hard link
+setting of PATH variable
+get a list of all environment variables
+edit the bash profile file
+change IP address of the machine
+what is network ID, subnet mask
+Diff type of IP addresses
+what IP address are routable
+how to find whether firewall is enabled
+how to find whether port is open
+explain output of ls -lrt and ps -ef
+how to enable header for command outputs
+what is an inode
+what is . oraenv
+difference between single and double quote
+find os version and platform
+find ram, cpu details
+increase swap space
+how to increase priority of a process
+how to perform NIC bonding
+check how the names are resolved and order of resolution
+check crontab log files
+change timetamp and zone of the machine
+how to start/stop/check status of a service
+how to start something at machine start and stop at machine stop
