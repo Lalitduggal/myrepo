@@ -1,0 +1,401 @@
+region: N.Virgina for voice bot
+region: N.Virgina for lambda to be used by bot
+region: N.Virgina for dynamodb
+region: N.Virgina for ses (always; as it is common for all regions)
+
+region: sydney for connect
+region: N.Virgina for lambda to be used by connect
+
+ses: fromemail id
+iam: ptmLambdaExecutionRole
+	lambda basic execution
+	ses full access
+
+create email template for confirmation
+create email template for confirmation
+delete email template
+
+
+{
+    "appointmentDate": "23 May 2019",
+    "appointmentTime": "4pm",
+    "contactName": "Lalit Duggal",
+    "studentName": "Vansh Duggal",
+    "studentClass": "2A",
+    "contactMobile": "+61476286661"
+}
+
+
+CONFIRMATION_TEMPLATE_NAME
+CANCELLATION_TEMPLATE_NAME
+
+connect: create instance in sydney
+larry
+duggal
+admin/My..01
+
+inbound
+
+Your data will be encrypted and stored here	connect-0bd06100cb8c/connect/ptmvoicebot
+Your Contact flow logs will be stored here	/aws/connect/ptmvoicebot
+
+Access URL: https://ptmvoicebot.awsapps.com/connect/home
+
+claim phone number by clicking on create support case
+DID:  +61 7 3062 4542
+
+create contact flow, save and publish
+link the contact flow with number
+
+
+ptmTbleCallDetails
+calledDateTime
+mobile
+
+======================================================
+ptmCreateConfirmationEmailTemplate
+
+
+import json
+import os
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+
+    #vTemplateName = os.environ['CONFIRMATION_TEMPLATE_NAME']
+    vSubjectPart = 'appointment confirmation - {{appointmentDate}} at {{appointmentTime}}'
+    vTextPart = 'This is text part'
+
+    vHtmlPart = '''
+    <html>
+    <head></head>
+    <body>
+    
+    Dear {{contactName}},
+    <p>
+    As per your request from {{contactMobile}}, your appointment has been confirmed.
+    </p>
+    Details as below:
+    <p>
+    <table>
+        <tr>
+            <td>School</td>
+            <td>: {{schoolName}}</td>
+        </tr>
+        <tr>
+            <td>Event</td>
+            <td>: {{eventName}}</td>
+        </tr>     
+        <tr>
+            <td>Appointment Date</td>
+            <td>: {{appointmentDate}}</td>
+        </tr>     
+        <tr>
+            <td>Appointment Time</td>
+            <td>: {{appointmentTime}}</td>
+        </tr>   
+        <tr>
+            <td>Student Name</td>
+            <td>: {{studentName}}</td>
+        </tr>   
+        <tr>
+            <td>Class</td>
+            <td>: {{studentClass}}</td>
+        </tr> 
+        <tr>
+            <td>Teacher Name</td>
+            <td>: {{teacherName}}</td>
+        </tr>                                                
+    </table>
+    </p>
+    <br></br>
+    Please call our 24/7 call centre number: +6100000000 to cancel or reschedule your appointment.
+    <p></p>
+    <br></br>
+    Regards,
+    <br></br>
+    Automated Appointment Booking System
+    </p>
+    </body>
+    </html>
+    '''
+    
+    response = client.create_template(
+        Template={
+            'TemplateName': os.environ['CONFIRMATION_TEMPLATE_NAME'],
+            'SubjectPart': vSubjectPart,
+            'TextPart': vTextPart,
+            'HtmlPart': vHtmlPart
+        }
+    )
+
+	
+CONFIRMATION_TEMPLATE_NAME = ptmConfirmationEmailTemplate
+
+
+
+
+ptmSendConfirmationEmail
+import json
+import os
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+    # {
+    #   "contactEmail": "larryduggal@gmail.com",
+    #   "contactName": "Larry Duggal",
+    #   "studentName": "Vansh Duggal",
+    #   "studentClass": "2A",
+    #   "appointmentDate": "23 May 2019",
+    #   "appointmentTime": "4pm",
+    #   "contactMobile": "+61476286661",
+    #   "teacherName": "Mrs Divya Duggal"
+    # }
+    vTemplateData = {
+        "schoolName": os.environ['SCHOOL_NAME'],
+        "eventName": os.environ['EVENT_NAME'],
+        "appointmentDate": event['appointmentDate'],
+        "appointmentTime": event['appointmentTime'],
+        "contactName": event['contactName'],
+        "studentName": event['studentName'],
+        "studentClass": event['studentClass'],
+        "contactMobile": event['contactMobile'],
+        "teacherName": event['teacherName']
+    }
+    
+    response = client.send_templated_email(
+        Source=os.environ['FROM_NAME'] +'<' + os.environ['FROM_EMAIL'] + '>',
+        Destination={
+            'ToAddresses': [
+                event['contactName'] + '<' + event['contactEmail'] + '>'
+            ]#,
+            # 'CcAddresses': [
+            #     'string',
+            # ],
+            # 'BccAddresses': [
+            #     event['teacherName'] + '<' + event['teacherEmail'] + '>'
+            # ]
+        },
+        ReplyToAddresses=[
+            os.environ['FROM_EMAIL']
+        ],
+        # ReturnPath='string',
+        # SourceArn='string',
+        # ReturnPathArn='string',
+        # Tags=[
+        #     {
+        #         'Name': 'string',
+        #         'Value': 'string'
+        #     },
+        # ],
+        #ConfigurationSetName='string',
+        Template=os.environ['CONFIRMATION_TEMPLATE_NAME'],
+        #TemplateArn='string',
+        TemplateData=json.dumps(vTemplateData)
+    )
+	
+	CONFIRMATION_TEMPLATE_NAME = ptmConfirmationEmailTemplate
+	FROM_EMAIL = lalitduggal@exihub.com
+	FROM_NAME = PTMBot
+	SCHOOL_NAME = Exihub Waverley Primary School
+	EVENT_NAME = Parent Teacher Meeting
+	
+	
+	
+	{
+  "contactEmail": "larryduggal@gmail.com",
+  "contactName": "Larry Duggal",
+  "studentName": "Vansh Duggal",
+  "studentClass": "2A",
+  "appointmentDate": "23 May 2019",
+  "appointmentTime": "4pm",
+  "contactMobile": "+61476286661",
+  "teacherName": "Mrs Divya Duggal",
+  "teacherEmail": "divya.r.grover@gmail.com"
+}
+
+
+
+
+	
+	
+	ptmDeleteEmailTemplate
+import json
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+    
+    # {
+    #   "templateName": "ptmConfirmationEmailTemplate"
+    # }
+
+
+    response = client.delete_template(
+        TemplateName=event['templateName']
+    )
+	
+	{
+  "templateName": "ptmCancellationEmailTemplate"
+}
+
+
+
+
+
+
+
+
+
+ptmCreateCancelEmailTemplate
+import json
+import os
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+
+    vTemplateName = os.environ['CANCELLATION_TEMPLATE_NAME']
+    vSubjectPart = 'appointment cancelled - {{appointmentDate}} at {{appointmentTime}}'
+    vTextPart = 'This is text part'
+
+    vHtmlPart = '''
+    <html>
+    <head></head>
+    <body>
+    Dear {{contactName}},
+    <p>
+    As per your request from {{contactMobile}}, your appointment has been <b style="color:red">CANCELLED</b>.
+    </p>
+    Details as below:
+    <p>
+    <table>
+        <tr>
+            <td>School</td>
+            <td>: {{schoolName}}</td>
+        </tr>
+        <tr>
+            <td>Event</td>
+            <td>: {{eventName}}</td>
+        </tr>     
+        <tr>
+            <td>Appointment Date</td>
+            <td>: {{appointmentDate}}</td>
+        </tr>     
+        <tr>
+            <td>Appointment Time</td>
+            <td>: {{appointmentTime}}</td>
+        </tr>   
+    </table>
+    </p>
+    <br></br>
+    <p>
+    Please call our 24/7 call centre number: +6100000000 to book a new appointment.
+    </p>
+    <br></br>
+    <p>
+    Regards,
+    <br></br>
+    Automated Appointment Booking System
+    </p>
+    </body>
+    </html>
+    '''
+    
+    response = client.create_template(
+        Template={
+            'TemplateName': vTemplateName,
+            'SubjectPart': vSubjectPart,
+            'TextPart': vTextPart,
+            'HtmlPart': vHtmlPart
+        }
+    )
+
+	CANCELLATION_TEMPLATE_NAME = ptmCancellationEmailTemplate
+	
+	
+	
+	
+	
+	
+	
+	
+	ptmSendCancellationEmail
+import json
+import os
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+    # {
+    #     "contactEmail": "larryduggal@gmail.com",
+    #     "contactName": "Larry Duggal",
+    #     "appointmentDate": "23 May 2019",
+    #     "appointmentTime": "4pm",
+    #     "contactMobile": "+61476286661"
+    # }
+
+    vTemplateData = {
+        "schoolName": os.environ['SCHOOL_NAME'],
+        "eventName": os.environ['EVENT_NAME'],
+        "appointmentDate": event['appointmentDate'],
+        "appointmentTime": event['appointmentTime'],
+        "contactName": event['contactName'],
+        "contactMobile": event['contactMobile']
+    }
+    
+    response = client.send_templated_email(
+        Source=os.environ['FROM_NAME'] +'<' + os.environ['FROM_EMAIL'] + '>',
+        Destination={
+            'ToAddresses': [
+                event['contactName'] + '<' + event['contactEmail'] + '>'
+            ]#,
+            # 'CcAddresses': [
+            #     'string',
+            # ],
+            # 'BccAddresses': [
+            #     event['teacherName'] + '<' + event['teacherEmail'] + '>'
+            # ]
+        },
+        ReplyToAddresses=[
+            os.environ['FROM_EMAIL']
+        ],
+        # ReturnPath='string',
+        # SourceArn='string',
+        # ReturnPathArn='string',
+        # Tags=[
+        #     {
+        #         'Name': 'string',
+        #         'Value': 'string'
+        #     },
+        # ],
+        #ConfigurationSetName='string',
+        Template=os.environ['CANCELLATION_TEMPLATE_NAME'],
+        #TemplateArn='string',
+        TemplateData=json.dumps(vTemplateData)
+    )
+	
+	
+	SCHOOL_NAME = Exihub Waverley Primary School
+	EVENT_NAME = Parent Teacher Meeting
+	FROM_NAME = PTMBot
+	FROM_EMAIL = lalitduggal@exihub.com
+	CANCELLATION_TEMPLATE_NAME = ptmCancellationEmailTemplate
+	
+	{
+    "contactEmail": "larryduggal@gmail.com",
+    "contactName": "Larry Duggal",
+    "appointmentDate": "23 May 2019",
+    "appointmentTime": "4pm",
+    "contactMobile": "+61476286661"
+}
+
+	
+======================================================
