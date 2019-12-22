@@ -1,0 +1,602 @@
+Login to aws account: lalit.duggal@gmail.com
+
+select N.Virginia as the region
+
+go to ses services
+
+verify domain name if you own it. eg: exihub.com
+select generate DKIM settings
+login to the domain dns setting of your provider and add the above entries.
+
+verify email id either your domain email id or generic gmail etc. eg: lalitduggal@exihub.com
+click on the link in verification email sent by aws
+
+=================================================================
+go to iam
+create role: greetings-role-lambda
+
+AWSLambdaBasicExecutionRole
+CloudWatchLogsFullAccess
+AmazonDynamoDBFullAccess
+AmazonSESFullAccess
+AmazonSQSFullAccess
+AmazonSNSFullAccess
+
+=================================================================
+greetings-check-sns-topic-exists
+
+
+=================================================================
+greetings-delete-sns-topic
+
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_SNS_TOPIC_ARN = arn:aws:sns:us-east-1:289810518418:greetings-sns-topic
+
+
+import json
+import os
+import boto3
+
+client = boto3.client('sns')
+
+def lambda_handler(event, context):
+
+    try:
+        response = client.delete_topic(
+            TopicArn=os.environ['GREETINGS_SNS_TOPIC_ARN']
+        )
+        print("Successfully deleted SNS topic: " + os.environ['GREETINGS_SNS_TOPIC_ARN'])
+        return "Success"
+    except Exception as e:
+        print("Error in deleting SNS topic: " + os.environ['GREETINGS_SNS_TOPIC_ARN'])
+        return("Failed")
+
+        
+
+=================================================================
+greetings-create-sns-topic
+
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_SNS_TOPIC = greetings-sns-topic
+
+import json
+import os
+import boto3
+
+client = boto3.client('sns')
+
+def lambda_handler(event, context):
+
+    try:
+        response = client.create_topic(
+            Name=os.environ['GREETINGS_SNS_TOPIC']
+        )
+        print("Successfully created: " + os.environ['GREETINGS_SNS_TOPIC'])
+        return("Success")
+    except Exception as e:
+        print("Error in creating sns topic: " + os.environ['GREETINGS_SNS_TOPIC'])
+        return("Failed")
+	
+=================================================================
+
+
+greetings-delete-config-set
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_CONFIG_SET = greetings-config-set
+
+import json
+import os
+import boto3
+
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+    
+    try:
+        response = client.delete_configuration_set(
+            ConfigurationSetName=os.environ['GREETINGS_CONFIG_SET']
+        )
+        print("Config set: " + os.environ['GREETINGS_CONFIG_SET'] + " successfully created")
+        return "Success"
+    except Exception as e:
+        if (e.response['Error']['Code']) == 'ConfigurationSetDoesNotExist':
+            print("Config set " + os.environ['GREETINGS_CONFIG_SET'] + " does not exist; so no need to delete")
+            return "Success"
+        else:
+            print("Please check error code: " + e.response['Error']['Code'])
+            return "Failed"
+
+
+======================================================
+
+greetings-check-config-set-exists
+
+
+            
+======================================================
+
+greetings-create-config-set
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_CONFIG_SET = greetings-config-set
+
+
+import json
+import os
+import boto3
+
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+
+    try:
+        response = client.create_configuration_set(
+            ConfigurationSet={
+                'Name': os.environ['GREETINGS_CONFIG_SET']
+            }
+        )
+        print("Successfully created config set: " + os.environ['GREETINGS_CONFIG_SET'])
+        return "Success"
+    except Exception as e:
+        print("Error while creating config set: " + os.environ['GREETINGS_CONFIG_SET'])
+        return "Failed"
+
+
+           
+
+================================================================
+greetings-configure config-set			
+
+
+
+
+==================================================================
+greetings-check-table-exists
+
+
+
+==================================================================
+greetings-delete-metadata-table
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_TABLE_METADATA = greetings-table-metadata
+
+
+import json
+import os
+import boto3
+
+client_dynamodb = boto3.client('dynamodb')
+
+def lambda_handler(event, context):
+
+    v_table_name = os.environ['GREETINGS_TABLE_METADATA']
+
+    # delete table
+    try:
+        response = client_dynamodb.delete_table(
+            TableName = v_table_name
+        )
+        print('Table deleted ' + v_table_name)
+        return("Success")
+    except client_dynamodb.exceptions.ResourceNotFoundException:
+        print('Table does not exists ' + v_table_name)
+        return("Failed")
+
+
+
+==================================================================
+greetings-create-table-metadata
+Please note only key column need to be defined.
+also BillingMode='PROVISIONED' is applicable when you upgrade your aws cli to latest boto3 version
+Also, column names should not have hypens
+
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_TABLE_METADATA = greetings-table-metadata
+
+import json
+import os
+import boto3
+
+
+client = boto3.client('dynamodb')
+
+def lambda_handler(event, context):
+
+    try:
+        response = client.create_table(
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'group',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'email',
+                    'AttributeType': 'S'
+                }
+            ],
+            TableName=os.environ['GREETINGS_TABLE_METADATA'],
+            KeySchema=[
+                {
+                    'AttributeName': 'group',
+                    'KeyType': 'HASH'
+                },
+                {
+                    'AttributeName': 'email',
+                    'KeyType': 'RANGE'
+                }
+            ],
+            #BillingMode='PROVISIONED',
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1
+            }
+        )
+        print("Successfully created table: " + os.environ['GREETINGS_TABLE_METADATA'])
+        return("Success")
+    except Exception as e:
+        print("Error while creating table because " + e.response['Error']['Message'])
+        return("Failed")
+
+===================================================================
+greetings-insert-into-table-metadata
+
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_TABLE_METADATA = greetings-table-metadata
+
+
+import json
+import os
+import boto3
+
+client = boto3.client('dynamodb')
+
+def lambda_handler(event, context):
+
+    # {
+    #     "group": "family",
+    #     "occasions": "christmas,newyear,diwali,holi",
+    #     "name": "Lalit",
+    #     "firstName": "Lalit",
+    #     "lastName": "Duggal",
+    #     "email": "lalit.duggal@gmail.com",
+    #     "mobile": "+61476286661"
+    # }
+    voccasions=event['occasions'].split(',')
+
+    try:
+        response = client.put_item(
+            TableName=os.environ['GREETINGS_TABLE_METADATA'],
+            Item={
+                'group': {
+                    'S': event['group']
+                },
+                'occasions': {
+                    'SS': voccasions
+                },
+                'name': {
+                    'S': event['name']
+                },
+                'firstName': {
+                    'S': event['firstName']
+                },
+                'lastName': {
+                    'S': event['lastName']
+                },
+                'email': {
+                    'S': event['email']
+                },
+                'mobile': {
+                    'S': event['mobile']
+                }
+            },
+            ReturnValues='NONE',
+            ReturnConsumedCapacity='TOTAL'#,
+        )
+        print("Successfully inserted record in table: " + os.environ['GREETINGS_TABLE_METADATA'])
+        return("Success")
+    except Exception as e:
+        print("Error in inserting record")
+        return("Failed")
+
+===================================================================
+greetings-check-sqs-exists
+
+
+===================================================================
+greetings-delete-sqs
+
+
+
+=====================================================================
+greetings-create-sqs
+
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_SQS_NAME = greetings-sqs
+
+import json
+import os
+import boto3
+
+client = boto3.client('sqs')
+
+def lambda_handler(event, context):
+    try:
+        response = client.create_queue(
+            QueueName=os.environ['GREETINGS_SQS_NAME']
+        )
+        print("Successfully created SQS: " + os.environ['GREETINGS_SQS_NAME'])
+        return("Success")
+    except Exception as e:
+        print("Error in SQS creation")
+        return("Failed")
+
+
+
+===================================================================
+greetings-query-records-and-insert-message-in-sqs
+
+python3.6
+use existing role: greetings-role-lambda
+
+GREETINGS_TABLE_METADATA = greetings-table-metadata
+GREETINGS_SQS_NAME = https://sqs.us-east-1.amazonaws.com/289810518418/greetings-sqs
+
+import json
+import os
+import boto3
+from boto3.dynamodb.conditions import Key, Attr
+
+client_ses = boto3.client('ses')
+client_sqs = boto3.client('sqs')
+client_dynamodb = boto3.client('dynamodb')
+
+def lambda_handler(event, context):
+
+    # {
+    #   "group": "family",
+    #   "occasions": "christmas"
+    # }
+
+    try:
+        response = client_dynamodb.query(
+            TableName=os.environ['GREETINGS_TABLE_METADATA'],
+            Select='SPECIFIC_ATTRIBUTES',
+            ConsistentRead=True,
+            ReturnConsumedCapacity='TOTAL',
+            ProjectionExpression='#group, #occasions, #name, #firstName, #lastName, #email, #mobile',
+            FilterExpression='contains(#occasions, :occasions)', # #occasions in (:occasions); contains matches whole word
+            KeyConditionExpression='#group = :group',
+            ExpressionAttributeNames={
+                '#group': 'group',
+                '#occasions': 'occasions',
+                '#name': 'name',
+                '#firstName': 'firstName',
+                '#lastName': 'lastName',
+                '#email': 'email',
+                '#mobile': 'mobile'
+            },
+            ExpressionAttributeValues={
+                ':group': {
+                    'S': event['group']
+                },
+                ':occasions': {
+                    'S': event['occasions']
+                } 
+            }
+        )
+        print('Successfully queried table: ' + os.environ['GREETINGS_TABLE_METADATA'])
+        print(response)
+
+        if response['Count'] > 0:
+            print('As count of records found is: ' + str(response['Count']) + ' proceeding to insert these records in sqs messages')
+            
+            for item in response['Items']:
+
+                response = client_sqs.send_message(
+                    QueueUrl=os.environ['GREETINGS_SQS_NAME'],
+                    MessageBody='Greetings',
+                    MessageAttributes={
+                        'group': {
+                            'StringValue': event['group'],
+                            'DataType': 'String'
+                        },
+                        'occasions': {
+                            'StringValue': event['occasions'],
+                            'DataType': 'String'
+                        },
+                        'name': {
+                            'StringValue': item['name']['S'],
+                            'DataType': 'String'
+                        },                        
+                        'firstName': {
+                            'StringValue': item['firstName']['S'],
+                            'DataType': 'String'
+                        },
+                        'lastName': {
+                            'StringValue': item['lastName']['S'],
+                            'DataType': 'String'
+                        },
+                        'email': {
+                            'StringValue': item['email']['S'],
+                            'DataType': 'String'
+                        },
+                        'mobile': {
+                            'StringValue': item['mobile']['S'],
+                            'DataType': 'String'
+                        }
+                    }
+                )
+                
+                
+            return("Success")
+        else:
+            print('No records found in table; so exiting')
+            return("Failed")
+    except Exception as e:
+        print(e)
+        return("Failed")
+
+
+===================================================================
+greetings-delete-message-from-sqs
+
+
+
+
+=======================================================================
+greetings-check-email-template-exists
+
+
+
+
+=======================================================================
+greetings-delete-email-template
+
+python3.6
+use existing role: greetings-role-lambda
+
+import json
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+    
+    # {
+    #   "template-name": "greetings-christmas-email-template"
+    # }
+
+    try:
+        response = client.delete_template(
+            TemplateName=event['template-name']
+        )
+        print("Successfully deleted email template: " + event['template-name'])
+        return("Success")
+    except Exception as e:
+        print("Error in deleting email template: " + event['template-name'])
+        return("Failed")
+		
+========================
+
+greetings-create-christmas-email-template
+python3.6
+use existing role: greetings-role-lambda
+
+CHRISTMAS_EMAIL_TEMPLATE_NAME = greetings-christmas-email-template
+
+import json
+import os
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+
+    #vTemplateName = os.environ['CHRISTMAS_EMAIL_TEMPLATE_NAME']
+    vSubjectPart = 'merry christmas and happy new year - {{first-name}}'
+    vTextPart = 'This is text part'
+
+    vHtmlPart = '''
+    <html>
+    <head></head>
+    <body>
+    
+    Dear {{first-name}},
+    <p>
+    Wishing you and your family a merry christmas and a happy new year.
+    </p>
+    <p></p>
+    <br></br>
+    Regards,
+    <br></br>
+    Lalit Duggal
+    </p>
+    </body>
+    </html>
+    '''
+    
+    response = client.create_template(
+        Template={
+            'TemplateName': os.environ['CHRISTMAS_EMAIL_TEMPLATE_NAME'],
+            'SubjectPart': vSubjectPart,
+            'TextPart': vTextPart,
+            'HtmlPart': vHtmlPart
+        }
+    )
+
+	
+
+
+==========================================================
+greetings-send-email-using-template
+
+python3.6
+use existing role: greetings-role-lambda
+
+FROM_NAME = Lalit Duggal
+FROM_EMAIL = lalitduggal@exihub.com
+REPLY_TO_EMAIL = lalitduggal@exihub.com
+CONFIG_SET = greetings-config-set
+PREFIX = greetings
+
+this is automatically called once message is inserted in sqs
+
+
+import json
+import os
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+
+    # print(event['Records'][0]['messageAttributes']['group']['stringValue'])
+    # print(event['Records'][0]['messageAttributes']['occasions']['stringValue'])
+    # print(event['Records'][0]['messageAttributes']['name']['stringValue'])
+    # print(event['Records'][0]['messageAttributes']['firstName']['stringValue'])
+    # print(event['Records'][0]['messageAttributes']['lastName']['stringValue'])
+    # print(event['Records'][0]['messageAttributes']['email']['stringValue'])
+    # print(event['Records'][0]['messageAttributes']['mobile']['stringValue'])
+    
+    vtemplatedata = {
+        'first-name': event['Records'][0]['messageAttributes']['firstName']['stringValue']
+    }
+    
+    response = client.send_templated_email(
+        Source=os.environ['FROM_NAME'] +'<' + os.environ['FROM_EMAIL'] + '>',
+        Destination={
+            'ToAddresses': [
+                event['Records'][0]['messageAttributes']['firstName']['stringValue'] + '<' + event['Records'][0]['messageAttributes']['email']['stringValue'] + '>'
+            ],
+        },
+        ReplyToAddresses=[
+            os.environ['REPLY_TO_EMAIL']
+        ],
+        ConfigurationSetName=os.environ['CONFIG_SET'],
+        Template=os.environ['PREFIX'] + '-' + event['Records'][0]['messageAttributes']['occasions']['stringValue'] + '-email-template',
+        TemplateData=json.dumps(vtemplatedata)
+    )
+
+  
+    	
+==================================================
+
+	once message is stored in sqs then auto trigger greetings-send-email-using-template
+	
+============================================================================
+    
