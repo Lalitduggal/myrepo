@@ -1,1 +1,65 @@
 
+AZ:900 Azure fundamentals
+---------------------------
+
+create a email account
+create an account on azure.com: This would be free for first month with some credits and other services would be free for 12 months
+
+
+Azure portal: portal.azure.com
+Azure CLI
+PowerShell
+Cloud Shell: using bash or powershell
+
+
+Cloud terms:
+High Availability: processing will take place; does NOT gurantee NO down time
+Fault Tolerance: gurantee NO down time (this is part of resilence)
+Disaster Recovery: complete plans to recover critical business systems (how long it takes to Recover and Point of time data to recover) RTO and RPO
+
+Scalability: scale up or scale down / scale in out scale out (use auto scaling for critical scenarios)
+Elasticity: enables scaling (to quickly expand or decrease computing resources)
+Agility: rapidly develop, test and launch software applications that drive business growth (focus on business instead of provisioning)
+
+
+Capital Expenditure: (CAPEX): cost to acquire or maintain assets
+
+Operation Expenditure: (OPEX): cost to run a business on day to day basis
+
+ROI: Return On Investment
+
+Cloud Pricing Models: Consumption based: per execution, per second, combination (pay as you go model)
+
+Cloud SERVICE Model:
+IAAS :Infrastructure as a service: actual servers: NO ownership of hardware: VMs, networking, storage, firewall, buildings
+PAAS: Platform as a service: middleware, tool, BI, DB: to support web applications life cycle: avoids software license
+SAAS: Software as a service: use the software (trial or monthly or annual subscripion)
+serverless: azure functions
+
+Azure marketplace:
+Solutions and Services: large collection from Microsoft and Partners (some are free/some are paid). If you are are partner you can publish your service
+integrates third party products and services
+
+Cloud architecture:
+Private: selected users only: complete control eg: infrastructure, security and privacy: so maintenance with organization NOT Microsoft; it is Azure on your hardware and you need your staff
+Public: no purchase	of hardware; maintained by Microsoft; no physical access
+Hybrid: data is not stored in cloud due to regulatory, governance reasons etc; complex to setup; best possible of both worlds
+
+
+azure architecture:
+azure regions
+azure availability zone
+
+
+
+geo redendancy
+
+
+60 min
+44 questions
+
+understand cloud concepts
+understand core azure services
+understand security, privacy, compliance and trust
+understand azure pricing and support
+700/1000
