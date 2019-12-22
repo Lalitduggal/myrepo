@@ -1,0 +1,73 @@
+find info about the repo by going to that repo then:
+svn info
+
+
+
+create svn repo:
+svnadmin create company-repo
+
+
+put some file in the svn repo workspace
+svn import sandbox/ file://<path>/sandbox
+
+initial commit
+
+
+
+checkout files:
+svn checkout file://<path>/sandbox
+
+
+
+commit the files from svn workspace to svn repo
+open a file and write and save it providing some comments
+
+
+go to the sandbox directory and then issue:
+svn log
+
+
+
+create a directory and then clone the svn repo which needs to be moved to git
+git svn clone file://<path>/sandbox
+
+
+go to the git repo directory then:
+git config -l
+
+
+go to svn repo sirectory and then add more files to svn:
+svn add test01.txt
+
+provide commit message
+svn ci
+
+
+go to git repo directory then:
+git svn rebase
+
+
+git log
+
+
+
+
+=== other commands
+gitk&
+
+
+svn up
+
+
+git svn dcommit
+
+==================
+
+svn checkout "svn url" <target directory>
+svn status
+
+to get updates from svn repo to local repo
+svn update
+
+to get updates from the github repo to local
+git pull
