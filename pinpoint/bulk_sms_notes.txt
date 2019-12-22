@@ -1,0 +1,28 @@
+regions: N.Virgina
+
+project: greetings
+
+email configure: lalitduggal@exihub.com -> confirm email
+
+segment: create segment -> import from csv (no space in header even after comma)
+ChannelType,Address,User.UserAttributes.FirstName,User.UserAttributes.LastName,User.UserAttributes.Mobile
+EMAIL, lalit.duggal@gmail.com, Lalit, Duggal, 0476286661
+EMAIL, divya.r.grover@gmail.com, Divya, Duggal, 0402002020
+
+ChannelType,Address,User.UserAttributes.FirstName,User.UserAttributes.LastName,User.UserAttributes.Mobile,User.UserAttributes.DevOps
+SMS, +61476286661, Lalit, Duggal, +61476286661, Y
+SMS, +61469044646, Divya, Duggal, +61469044646, Y
+
+campaign: create campaign camp-one -> choose segment -> email
+
+Dear {{User.UserAttributes.FirstName}} {{User.UserAttributes.LastName}} {{User.UserAttributes.Mobile}},</br>
+
+Hope you are doing well.</br></br>
+Lots of good wishes</br></br>
+
+Regards,</br>
+Lalit Duggal
+
+send -> immediately
+
+Launch campaign
