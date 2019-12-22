@@ -1,0 +1,309 @@
+WAF: Well Architected Framework
+Site Reliability
+Business Continuity
+Disaster Recovery
+User Management
+Patching
+Maintenance activities
+Monitoring
+Auditing
+Backup and Restoration
+Infrastructure as a Code
+Bespoke applications
+Cloud
+Hybrid
+On Premise
+lift and shift
+
+immutable infrastucture
+
+blue green deployments
+
+cloud agnostic
+
+pro bono
+
+prima
+alert/alarm and monitor
+notification
+
+keep it simple
+
+question a lot
+web hooks
+
+reduce operational cost
+
+performance improvements
+security concerns
+
+share information
+spread knowledge
+shorten feedback loops
+
+willingness to learn and improve
+
+agile
+kanban
+
+backlogs
+
+
+event driven architecture
+
+containers
+container as a service
+
+orchestration
+
+digital transformation
+
+software configuration management: scm
+
+source code
+
+aws
+azure
+google
+
+why
+what
+how
+where
+when
+
+
+environment management
+production deployments
+
+BAU
+
+release calendar
+
+build
+package
+deployment
+post deployment
+upgrading
+
+transition
+
+videos
+
+training
+knowledge sharing
+
+cloud engineer
+cloud architect
+
+
+
+
+Efficiency
+Effectively
+
+documentation
+
+people
+process
+technology
+
+data migration
+
+self learning
+
+real life scenarios
+
+CICD
+pipeline
+groovy DSL
+
+abreast with latest technology
+
+sprint
+agile framework
+epics
+features
+stories
+
+cost savings
+time reductions
+process improvement
+
+mentoring
+
+serverless
+
+automation
+
+encryption
+decryption
+
+gpg
+
+pem keys
+
+key management service
+
+sspm
+
+key store
+
+password management
+
+auto emails
+
+daily standups
+
+scrum
+
+scrum of scrums
+
+Program increments
+
+SAFE Agile
+
+micro services
+
+decouple
+
+linux
+windows
+
+open source
+
+
+==============
+------------------------------------------------
+devops:
+os: linux, windows
+scm: git
+config automation tool: ansible
+aws infrastructure as a code: cloudformation
+cicd: jenkins
+
+scripting: bash, awk, sed
+Databases: Oracle, MySQL
+Web Technologies: HTML, CSS, JavaScript, JQuery, Bootstrap, PHP
+Programming: Python
+------------------------------------------------
+aws serverless: lambda using python, dynamodb, api gateway, sns, sqs, ses, route53, s3, glacier, cloudformation, SAM, Amazon Connect, Cognito, step functions, system manager parameter store, lex, polly, comprehend
+
+aws cicd: code commit, code build, code deploy
+
+build tools: ant, maven, gradle
+
+ssh: putty, mobaxterm
+
+secure connectivity: ssh-keys, pem keys, mstsc
+secure file transfer: sftp, scp, winscp, filezilla, cuteftp
+package management utility: yum , apt-get, chocklatey, pip
+
+architecture diagrams: microsoft visio, draw.io, cloudcraft, powerpoint
+Cloud: AWS: 40+ services, basics of Microsoft Azure and Google Cloud Platform
+
+source code editors: visual studio code, vi, sublime text, atom, notepad, notepad++, editplus
+
+Artifactory: JFrog
+
+word, excel, powerpoint
+
+
+5 a's of security
+a
+a
+a
+a
+a
+
+3 a's of :
+a
+a
+a
+
+
+security:
+confidentiality
+integrity: checksum, md5sum
+availability
+
+
+authentication
+authorization
+
+
+password
+token
+secret keys
+
+
+ldap integration
+no proxy settings
+
+
+
+5 pillars of architecting:
+resilence:
+
+
+
+
+RTO: Recovery Time Objective
+RT
+
+
+
+---------------------------------
+management:
+documentation: confluence
+agile/Safe Agile: features -> epics -> stories: JIRA
+change requests: Remedy
+Problem/Incident management: HP-ALM, Service Now
+--------------------------------------
+
+Disaster Recovery: Oracle DataGuard
+Data Replication: Oracle Golden Gate
+
+------------------------------------------------
+personal projects and git repositories:
+1: broker documentation using s3
+2: recruiter JD using s3
+3: recruiter CV upload
+4: Wishing app via email and sms
+5: MyCV app
+6: RSVP Call Centre
+7: SAFE using twilio integration: 2 way sms
+8: visitor management system
+9: DevOps bot
+------------------------------------------------
+
+git repositories and video courses created:
+1 :git
+2: aws basics for each service
+3: vi editor
+4: unix basics
+------------------------------------------------
+
+certifications:
+AWS:
+	cloud practitioner
+	cloud architect associate
+	cloud devops associate
+	cloud system administrator
+	cloud security specialist
+	cloud bigdata specialist
+	cloud architect professional
+
+	
+Azure:
+
+
+
+Google:
+
+
+Kubernetes
+
+Docker
+	
+------------------------------------------------
