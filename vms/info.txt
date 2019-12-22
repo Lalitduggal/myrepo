@@ -9,3 +9,155 @@ update vms_employee set location = 'Mumbai'
 
 username: admin@admin.com
 password:123456
+
+
+
+===================
+
+create iam role for vms: vms-role-lambda-basic
+
+
+
+vms-checkin-proxy
+lambda for calling the step function: vms-checkin
+python: 3.7
+
+
+
+step function vms-step-function-checkin
+for iam role: 
+create an IAM role for me:
+vms-role-checkin-step-function-basic-execution
+Please note: all the lambda functions used in step function is now eligble to be executed by this step function.
+In case you will add more function then this has to be created again
+
+
+
+
+
+vms-checkin-visitor-insert-into-table
+
+
+vms-checkin-employee-email
+
+vms_checkin-employee-sms
+
+vms-checkin-visitor-email
+
+
+vms-checkin-visitor-sms
+
+vms-checkin-visitor-email-nda
+
+
+
+EMPLOYEE_CHECKIN_EMAIL_ENABLED = Y
+EMPLOYEE_CHECKIN_SMS_ENABLED = Y
+VISITOR_CHECKIN_EMAIL_ENABLED = Y
+VISITOR_CHECKIN_SMS_ENABLED = Y
+VISITOR_CHECKIN_EMAIL_NDA_ENABLED = Y
+
+
+
+vms-create-config-set
+
+
+vms-delete-and-create-checkin-employee-email-template
+vms-delete-and-create-checkin-visitor-email-template
+
+vms-delete-and-create-checkout-employee-email-template
+vms-delete-and-create-checkout-visitor-email-template
+
+
+
+
+
+
+
+	
+	
+	==================
+	import os
+
+import boto3
+client = boto3.client('ses')
+
+def lambda_handler(event, context):
+
+    v_template_name = os.environ['CHECKIN_EMPLOYEE_EMAIL_TEMPLATE']
+    
+    v_subject_part = 'checked in - visitor - {{visitor_first_name}} {{visitor_last_name}}'
+
+    # v_text_part = '''
+    # Dear {{name}}, Wishing you and your family a very happy diwali.
+
+    # Regards,
+    # Lalit Duggal and family
+    # Mobile: +61 476 286 661
+    # '''
+
+    
+    v_html_part = '''
+    Dear {{employee_first_name}} {{employee_last_name}},<br></br><br></br>
+    
+    <b>Visitor details as below:</b><br></br>
+    <table>
+        <tr colspan="2"><td><img src="https://s3.amazonaws.com/vms-exihub/sample/lalit_duggal.jpg"></td></tr>
+        <tr>Name<td>{{visitor_first_name}} {{visitor_last_name}}</td></tr>
+        <tr>Email<td>{{visitor_email}}</td></tr>
+        <tr>Mobile<td>{{visitor_mobile}}</td></tr>
+        <tr>Purpose<td>{{visitor_purpose}}</td></tr>
+        <tr>Organization<td>{{visitor_organization}}</td></tr>
+        <tr>Checkin date<td>{{visitor_checkin_date}}</td></tr>
+        <tr>Checkin time<td>{{visitor_checkin_time}}</td></tr>
+    </table>
+    <br></br>
+    Regards,<br></br>
+    '''
+    v_html_part = v_html_part + os.environ['EMAIL_SIGNATURE_NAME'] + '<br></br>' + os.environ['EMAIL_SIGNATURE_CONTACT_DETAIL']
+    #v_html = bytes(v_html_part, encoding= 'utf-8')
+    #v_html_converted = str(v_html)
+    # delete template
+    response = client.delete_template(
+        TemplateName = v_template_name
+    )    
+    
+    # create template
+    response = client.create_template(
+        Template={
+            'TemplateName': v_template_name,
+            'SubjectPart': v_subject_part,
+            # 'TextPart': v_text_part,
+            'HtmlPart': v_html_part
+        }
+    )
+	====================
+
+{
+	"employee_first_name": "Divya",
+	"employee_last_name": "Duggal",
+	"employee_email": "divya.r.grover@gmail.com",
+	"employee_mobile": "+61476286661"
+}
+
+
+{
+	"visitor_first_name":"Lalit",
+	"visitor_last_name":"Duggal",
+	"visitor_email":"lalit.duggal@gmail.com",
+	"visitor_mobile":"+61476286661",
+	"visitor_purpose":"Meeting",
+	"visitor_organization":"Exihub",
+	"visitor_to_meet":"Divya Duggal (divya.r.grover@gmail.com)",
+	"visitor_checkin_date":"24-May-2019",
+	"visitor_checkin_time":"10:30:45",
+	
+	"visitor_checkout_date":"24-May-2019",
+	"visitor_checkout_time":"16:00:12",
+
+	"visitor_photo_url":"s3://vms/mumbai/visitor/photo/Lalit_Duggal_24_May_2019_10_30_45.jpg",
+	"visitor_signature_url":"s3://vms/mumbai/visitor/signature/Lalit_Duggal_24_May_2019_10_30_45.jpg",
+	"visitor_signed_nda_url":"s3://vms/mumbai/visitor/signed_nda/pdf/Lalit_Duggal_24_May_2019_10_30_45.pdf"
+}
+
+PURPOSE=['Meeting','Interview','Personal','Others']
